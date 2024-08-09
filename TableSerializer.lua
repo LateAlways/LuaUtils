@@ -6,7 +6,6 @@
 
   SerializeTable(Table: {any}, ForceDictionaryLayout: boolean?, Beautify: boolean?)
 ]]--
-
 function export(tabl, forcedictlayout, beautify, tabs)
     local SPACES_PER_TAB = 2
     local loop
@@ -138,6 +137,9 @@ function export(tabl, forcedictlayout, beautify, tabs)
         end
     end
     table.remove(out, #out)
+    if not ((tabs == 1 or containsTable or not IsArray) and beautify) then
+        table.remove(out, #out)
+    end
     if (tabs == 1 or containsTable or not IsArray) and beautify then
         table.insert(out, "\n")
         table.insert(out, string.rep(" ", (tabs-1)*SPACES_PER_TAB))
