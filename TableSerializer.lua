@@ -6,6 +6,7 @@
 ]]--
 
 function export(tabl, forcedictlayout, beautify, tabs)
+    local SPACES_PER_TAB = 2
     local loop
     local typeof = typeof or type
     if _VERSION == "Luau" then loop = function(a) return a end else loop = pairs end
@@ -76,7 +77,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
     if not IsArray and beautify == nil then beautify = true end
 
     tabs = tabs or 1
-    local tab = string.rep(" ", tabs*4)
+    local tab = string.rep(" ", tabs*SPACES_PER_TAB)
     local out = {"{"}
     for i,v in loop(tabl) do
         if (tabs == 1 or not IsArray or containsTable) and beautify then
@@ -130,14 +131,14 @@ function export(tabl, forcedictlayout, beautify, tabs)
             table.insert(out, " (converted to string)\"")
         end
         table.insert(out, ",")
-        if not beautify then
+        if not ((tabs == 1 or containsTable or not IsArray) and beautify) then
             table.insert(out, " ")
         end
     end
     table.remove(out, #out)
     if (tabs == 1 or containsTable or not IsArray) and beautify then
         table.insert(out, "\n")
-        table.insert(out, string.rep(" ", (tabs-1)*4))
+        table.insert(out, string.rep(" ", (tabs-1)*SPACES_PER_TAB))
     end
     table.insert(out, "}")
     return table.concat(out)
