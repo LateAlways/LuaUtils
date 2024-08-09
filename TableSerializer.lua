@@ -40,9 +40,9 @@ function export(tabl, forcedictlayout, beautify, tabs)
     end
 
     local IsArray = true
-    local isTableOfTables = true
+    local containsTable = false
     local completeIsArray = false
-    local completeIsTableOfTables = false
+    local completeContainsTable = false
     local isEmpty = true
     if not forcedictlayout then
         local previous = 0
@@ -54,17 +54,17 @@ function export(tabl, forcedictlayout, beautify, tabs)
             else
                 previous = i
             end
-            if typeof(v) ~= "table" then
-                isTableOfTables = false
-                completeIsTableOfTables = true
+            if typeof(v) == "table" then
+                containsTable = true
+                completeContainsTable = true
             end
-            if completeIsArray and completeIsTableOfTables then
+            if completeIsArray and completeContainsTable then
                 break
             end
         end
     else
         IsArray = false
-        isTableOfTables = false
+        containsTable = false
         for _,_ in loop(tabl) do
             isEmpty = false
             break
@@ -79,7 +79,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
     local tab = string.rep(" ", tabs*4)
     local out = {"{"}
     for i,v in loop(tabl) do
-        if (tabs == 1 or not IsArray or isTableOfTables) and beautify then
+        if (tabs == 1 or not IsArray or containsTable) and beautify then
             table.insert(out, "\n")
             table.insert(out, tab)
         end
@@ -135,7 +135,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
         end
     end
     table.remove(out, #out)
-    if (tabs == 1 or isTableOfTables or not IsArray) and beautify then
+    if (tabs == 1 or containsTable or not IsArray) and beautify then
         table.insert(out, "\n")
         table.insert(out, string.rep(" ", (tabs-1)*4))
     end
