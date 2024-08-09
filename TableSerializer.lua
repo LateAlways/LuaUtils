@@ -1,3 +1,5 @@
+--!native
+
 --[[ 
   Usage: 
   local SerializeTable = require(path.to.TableSerializer)
