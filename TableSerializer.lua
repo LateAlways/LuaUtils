@@ -6,8 +6,9 @@
 
   SerializeTable(Table: {any}, ForceDictionaryLayout: boolean?, Beautify: boolean?)
 ]]--
+SPACES_PER_TAB = 2
+
 function export(tabl, forcedictlayout, beautify, tabs)
-    local SPACES_PER_TAB = 2
     local loop
     local typeof = typeof or type
     if _VERSION == "Luau" then loop = function(a) return a end else loop = pairs end
@@ -80,12 +81,14 @@ function export(tabl, forcedictlayout, beautify, tabs)
     tabs = tabs or 1
     local tab = string.rep(" ", tabs*SPACES_PER_TAB)
     local out = {"{"}
+    local shouldbeautify = (tabs == 1 or not IsArray or containsTable) and beautify
+    local isDict = forcedictlayout or not IsArray
     for i,v in loop(tabl) do
-        if (tabs == 1 or not IsArray or containsTable) and beautify then
+        if shouldbeautify then
             table.insert(out, "\n")
             table.insert(out, tab)
         end
-        if forcedictlayout or not IsArray then
+        if isDict then
             table.insert(out, "[")
             if typeof(i) == "string" then
                 if formatstring(i) == i and not forcedictlayout then
@@ -126,21 +129,27 @@ function export(tabl, forcedictlayout, beautify, tabs)
             table.insert(out, export(v, forcedictlayout, beautify, tabs + 1))
         elseif typeof(v) == "boolean" then
             table.insert(out, tostring(v))
+        elseif typeof(v) == "function" and _VERSION == "Luau" then
+            table.insert(out, "\"")
+            table.insert(out, formatstring(tostring(v)))
+            table.insert(out, " (Function name: ")
+            table.insert(out, formatstring(debug.info(v, "n")))
+            table.insert(out, ")\"")
         else
             table.insert(out, "\"")
             table.insert(out, formatstring(tostring(v)))
             table.insert(out, " (converted to string)\"")
         end
         table.insert(out, ",")
-        if not ((tabs == 1 or containsTable or not IsArray) and beautify) then
+        if not shouldbeautify then
             table.insert(out, " ")
         end
     end
     table.remove(out, #out)
-    if not ((tabs == 1 or containsTable or not IsArray) and beautify) then
+    if not shouldbeautify then
         table.remove(out, #out)
     end
-    if (tabs == 1 or containsTable or not IsArray) and beautify then
+    if shouldbeautify then
         table.insert(out, "\n")
         table.insert(out, string.rep(" ", (tabs-1)*SPACES_PER_TAB))
     end
