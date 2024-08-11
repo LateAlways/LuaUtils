@@ -127,7 +127,13 @@ function export(tabl, forcedictlayout, beautify, tabs)
                 table.insert(out, tostring(v))
             end
         elseif typeof(v) == "table" then
-            table.insert(out, export(v, forcedictlayout, beautify, tabs + 1))
+            if tostring(v) == tostring(tabl) then
+                table.insert(out, "\"")
+                table.insert(out, formatstring(tostring(v)))
+                table.insert(out, " (*** cycle table reference detected ***)\"")
+            else
+                table.insert(out, export(v, forcedictlayout, beautify, tabs + 1))
+            end
         elseif typeof(v) == "boolean" then
             table.insert(out, tostring(v))
         elseif typeof(v) == "function" and _VERSION == "Luau" then
