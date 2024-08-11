@@ -11,6 +11,7 @@ SPACES_PER_TAB = 2
 function export(tabl, forcedictlayout, beautify, tabs)
     local loop
     local typeof = typeof or type
+    if typeof(tabl) ~= "table" then return error("Argument 1 should be of type 'table'.") end
     if _VERSION == "Luau" then loop = function(a) return a end else loop = pairs end
     local function formatstring(str, stringchar)
         local stringchar = stringchar or "\""
