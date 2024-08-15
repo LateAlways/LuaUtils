@@ -17,7 +17,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
         local stringchar = stringchar or "\""
         local function isnormalcharacter(char)
             local charbyte = string.byte(char)
-            if charbyte >= 32 and charbyte <= 126 or charbyte == 10 then
+            if (charbyte >= 32 and charbyte <= 126) or charbyte == 10 then
                 return true
             else
                 return false
@@ -31,6 +31,8 @@ function export(tabl, forcedictlayout, beautify, tabs)
                 else
                     if char == "\n" then
                         return "\\n"
+                    elseif char == "\\" then
+                        return "\\\\"
                     else
                         return char
                     end
@@ -46,7 +48,6 @@ function export(tabl, forcedictlayout, beautify, tabs)
     local IsArray = true
     local containsTable = false
     local completeIsArray = false
-    local completeContainsTable = false
     local isEmpty = true
     if not forcedictlayout then
         local previous = 0
@@ -58,17 +59,12 @@ function export(tabl, forcedictlayout, beautify, tabs)
             else
                 previous = i
             end
-            if typeof(v) == "table" then
-                containsTable = true
-                completeContainsTable = true
-            end
-            if completeIsArray and completeContainsTable then
+            if completeIsArray then
                 break
             end
         end
     else
         IsArray = false
-        containsTable = false
         for _,_ in loop(tabl) do
             isEmpty = false
             break
@@ -82,7 +78,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
     tabs = tabs or 1
     local tab = string.rep(" ", tabs*SPACES_PER_TAB)
     local out = {"{"}
-    local shouldbeautify = (tabs == 1 or not IsArray or containsTable) and beautify
+    local shouldbeautify = (tabs == 1 or not IsArray) and beautify
     local isDict = forcedictlayout or not IsArray
     for i,v in loop(tabl) do
         if shouldbeautify then
@@ -92,14 +88,14 @@ function export(tabl, forcedictlayout, beautify, tabs)
         if isDict then
             table.insert(out, "[")
             if typeof(i) == "string" then
-                if formatstring(i) == i and not forcedictlayout then
+                if formatstring(i) == i and string.find("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", string.sub(i, 0,1)) and not forcedictlayout then
                     table.remove(out, #out)
                 else
                     table.insert(out, "\"")
                 end
                 
                 table.insert(out, formatstring(i))
-                if formatstring(i) ~= i or forcedictlayout then
+                if formatstring(i) ~= i or not string.find("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", string.sub(i, 0,1)) or forcedictlayout then
                     table.insert(out, "\"]")
                 end
             elseif typeof(i) == "number" then
@@ -123,6 +119,8 @@ function export(tabl, forcedictlayout, beautify, tabs)
                 table.insert(out, "-math.huge")
             elseif tostring(v) == "nan" or tostring(v) == "-1.#IND" then
                 table.insert(out, "0/0")
+            elseif tostring(v) == "1.#QNAN" then
+                table.insert(out, "-(0/0)")
             else
                 table.insert(out, tostring(v))
             end
