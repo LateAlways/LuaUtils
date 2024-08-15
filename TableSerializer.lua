@@ -46,7 +46,6 @@ function export(tabl, forcedictlayout, beautify, tabs)
     end
 
     local IsArray = true
-    local containsTable = false
     local completeIsArray = false
     local isEmpty = true
     if not forcedictlayout then
