@@ -50,7 +50,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
     local isEmpty = true
     if not forcedictlayout then
         local previous = 0
-        for i,v in loop(tabl) do
+        for i,_ in loop(tabl) do
             isEmpty = false
             if typeof(i) ~= "number" or i-previous ~= 1 then
                 IsArray = false
