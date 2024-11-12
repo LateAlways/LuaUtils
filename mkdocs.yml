@@ -1,0 +1,26 @@
+site_name: Lua Utilities
+site_url: https://latealways.is-a.dev/LuaUtils
+repo_url: https://github.com/LateAlways/LuaUtils
+repo_name: LateAlways/LuaUtils
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+  palette:
+    scheme: slate
+    primary: purple
+    accent: purple
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
