@@ -8,7 +8,8 @@
 ]]--
 SPACES_PER_TAB = 2
 
-function export(tabl, forcedictlayout, beautify, tabs)
+function export(tabl, forcedictlayout, beautify, tabs, max_depth)
+    if tabs and max_depth and tabs > max_depth then return "Reached max depth" end
     local loop
     local typeof = typeof or type
     if typeof(tabl) ~= "table" then return error("Argument 1 should be of type 'table'.") end
@@ -129,7 +130,7 @@ function export(tabl, forcedictlayout, beautify, tabs)
                 table.insert(out, formatstring(tostring(v)))
                 table.insert(out, " (*** cycle table reference detected ***)\"")
             else
-                table.insert(out, export(v, forcedictlayout, beautify, tabs + 1))
+                table.insert(out, export(v, forcedictlayout, beautify, tabs + 1, max_depth))
             end
         elseif typeof(v) == "boolean" then
             table.insert(out, tostring(v))
@@ -160,4 +161,4 @@ function export(tabl, forcedictlayout, beautify, tabs)
     table.insert(out, "}")
     return table.concat(out)
 end
-return function(tabl, ForceDictLayout, Beautify) return export(tabl, ForceDictLayout, Beautify) end
+return function(tabl, ForceDictLayout, Beautify, maxdepth) return export(tabl, ForceDictLayout, Beautify, maxdepth) end
